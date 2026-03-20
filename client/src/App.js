@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -13,13 +14,52 @@ import Dashboard from './pages/admin/Dashboard';
 import AdminCourses from './pages/admin/AdminCourses';
 import AdminNotices from './pages/admin/AdminNotices';
 import AdminCertificates from './pages/admin/AdminCertificates';
+import AdminStudents from './pages/admin/AdminStudents';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
 
-function App() {
+const App = () => {
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.15,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          // Optional: unobserve after animating once
+          // observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    const observeElements = () => {
+      const elements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+      elements.forEach(el => observer.observe(el));
+    };
+
+    // Initial observation
+    observeElements();
+
+    // Mutation observer to handle dynamically loaded content (like courses/notices)
+    const mutationObserver = new MutationObserver(() => {
+      observeElements();
+    });
+
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+      mutationObserver.disconnect();
+    };
+  }, []);
+
   return (
-    <AuthProvider>
-      <Router>
+    <ThemeProvider>
+      <AuthProvider>
+        <Router>
         <div className="min-h-screen flex flex-col">
           <Navbar />
           <main className="flex-grow">
@@ -53,12 +93,18 @@ function App() {
                   <AdminCertificates />
                 </ProtectedRoute>
               } />
+              <Route path="/admin/students" element={
+                <ProtectedRoute role="admin">
+                  <AdminStudents />
+                </ProtectedRoute>
+              } />
             </Routes>
           </main>
           <Footer />
         </div>
       </Router>
     </AuthProvider>
+  </ThemeProvider>
   );
 }
 

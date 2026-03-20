@@ -1,98 +1,111 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { GraduationCap, Eye, EyeOff } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Eye, EyeOff, ArrowLeft, Lock, User as UserIcon, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    username: '',
-    password: ''
-  });
+  const [formData, setFormData] = useState({ username: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { login, error, clearError } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    if (error) {
-      clearError();
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (error) clearError();
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
     const result = await login(formData.username, formData.password);
-    
-    if (result.success) {
-      navigate('/admin/dashboard');
-    }
-    
+    if (result.success) navigate('/admin/dashboard');
     setIsLoading(false);
   };
 
+
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-blue-300/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-      </div>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-500 py-12 px-4 shadow-inner">
       
-      <div className="max-w-md w-full space-y-8 relative z-10">
+
+      {/* Background decorations */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-primary-500/10 dark:bg-primary-500/20 rounded-full blur-3xl animate-blob" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-gold-500/10 dark:bg-gold-500/20 rounded-full blur-3xl animate-blob animation-delay-4000" />
+      <div className="absolute inset-0 opacity-5 dark:opacity-10"
+        style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #6366f1 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+
+      {/* Back arrow */}
+      <Link
+        to="/"
+        className="absolute top-6 left-6 flex items-center gap-2 text-secondary-600 dark:text-white/70 hover:text-primary-600 dark:hover:text-white transition-colors text-sm font-medium"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to Home
+      </Link>
+
+      <div className="max-w-md w-full space-y-6 relative z-10">
+
         {/* Header */}
-        <div className="text-center fade-in">
+        <div className="text-center animate-fadeInUp">
           <div className="flex justify-center mb-6">
             <div className="relative group">
-              <div className="p-4 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-2xl transform group-hover:scale-110 transition-all duration-300">
-                <GraduationCap className="h-16 w-16 text-white" />
+              <img 
+                src="/logo.png" 
+                alt="ABVSTVS Logo" 
+                className="h-36 w-36 object-contain filter drop-shadow-md group-hover:scale-110 transition-transform duration-500" 
+              />
+              <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-emerald-500 rounded-full border-2 border-white dark:border-indigo-950 flex items-center justify-center shadow-lg">
+                <ShieldCheck className="h-4 w-4 text-white" />
               </div>
-              <div className="absolute -inset-2 bg-gradient-to-br from-blue-600/20 to-indigo-600/20 rounded-2xl blur-xl group-hover:from-blue-600/30 group-hover:to-indigo-600/30 transition-all duration-300"></div>
             </div>
           </div>
-          <h2 className="text-4xl font-bold text-gradient mb-2">Welcome Back</h2>
-          <p className="text-gray-600 text-lg">Sign in to your admin dashboard</p>
+          <h2 className="text-4xl font-black text-secondary-900 dark:text-white mb-1">Admin Login</h2>
+          <p className="text-secondary-500 dark:text-primary-100/80">ABVSTVS Management Portal</p>
         </div>
 
-        {/* Login Form */}
-        <div className="card-glass slide-up">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <div className="alert alert-danger slide-down">
-                {error}
-              </div>
-            )}
+        {/* Form Card */}
+        <div className="bg-white/80 dark:bg-white/10 backdrop-blur-2xl rounded-3xl border border-white/40 dark:border-white/20 shadow-2xl p-8 animate-fadeInUp" style={{ animationDelay: '0.1s' }}>
 
+          {error && (
+            <div className="mb-5 p-4 bg-red-500/20 border border-red-400/40 text-red-200 rounded-xl text-sm flex items-start gap-2 animate-slideDown">
+              <span className="text-red-400 mt-0.5">✕</span>
+              {error}
+            </div>
+          )}
+
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            {/* Username */}
             <div>
-              <label htmlFor="username" className="label">
+              <label htmlFor="username" className="block text-sm font-semibold text-secondary-800 dark:text-blue-100 mb-2">
                 Username or Email
               </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                required
-                value={formData.username}
-                onChange={handleChange}
-                className="input"
-                placeholder="Enter your username or email"
-              />
+              <div className="relative">
+                <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-secondary-400 dark:text-blue-300" />
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  required
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="w-full pl-11 pr-4 py-3.5 bg-white/50 dark:bg-white/10 border border-secondary-200 dark:border-white/20 rounded-xl focus:outline-none
+                             focus:ring-2 focus:ring-primary-400 focus:border-transparent
+                             text-secondary-900 dark:text-white placeholder-secondary-400 dark:placeholder-blue-300/60 transition-all duration-300 hover:bg-white/70 dark:hover:bg-white/15"
+                  placeholder="Enter your username"
+                />
+              </div>
             </div>
 
+            {/* Password */}
             <div>
-              <label htmlFor="password" className="label">
+              <label htmlFor="password" className="block text-sm font-semibold text-secondary-800 dark:text-blue-100 mb-2">
                 Password
               </label>
               <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-blue-300" />
                 <input
                   id="password"
                   name="password"
@@ -100,78 +113,58 @@ const Login = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="input pr-12"
+                  className="w-full pl-11 pr-12 py-3.5 bg-white/10 border border-white/20 rounded-xl focus:outline-none
+                             focus:ring-2 focus:ring-primary-400 focus:border-transparent
+                             text-white placeholder-blue-300/60 transition-all duration-300 hover:bg-white/15"
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors duration-200"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-blue-300 hover:text-white transition-colors"
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400" />
-                  )}
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
             </div>
 
+            {/* Remember me */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                  Remember me
-                </label>
-              </div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" className="w-4 h-4 rounded border-white/30 bg-white/10 text-primary-500 focus:ring-primary-400" />
+                <span className="text-sm text-blue-200 font-medium">Remember me</span>
+              </label>
             </div>
 
-            <div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="btn btn-primary w-full py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover-lift"
-              >
-                {isLoading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="loading-spinner h-5 w-5 mr-3"></div>
-                    Signing in...
-                  </div>
-                ) : (
-                  'Sign In'
-                )}
-              </button>
-            </div>
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-4 bg-gradient-to-r from-primary-700 to-primary-900 text-white font-bold text-base rounded-xl
+                         shadow-lg shadow-primary-900/30 hover:shadow-primary-900/50 hover:-translate-y-0.5
+                         active:translate-y-0 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed
+                         flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  <ShieldCheck className="h-5 w-5" />
+                  Sign In to Dashboard
+                </>
+              )}
+            </button>
           </form>
 
-          <div className="mt-8">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200/50" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white/80 backdrop-blur-sm text-gray-500 font-medium">Demo Credentials</span>
-              </div>
-            </div>
 
-            <div className="mt-6 bg-blue-50/70 backdrop-blur-sm rounded-xl p-4 border border-blue-100/50">
-              <div className="text-center">
-                <p className="text-sm font-semibold text-blue-900 mb-2">Default Admin Login</p>
-                <p className="text-xs text-blue-700">
-                  Username: <span className="font-mono bg-blue-100 px-2 py-1 rounded">admin</span>
-                </p>
-                <p className="text-xs text-blue-700">
-                  Password: <span className="font-mono bg-blue-100 px-2 py-1 rounded">admin123</span>
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
+
+        <p className="text-center text-sm text-blue-300">
+          © {new Date().getFullYear()} ABVSTVS. Secure Admin Portal.
+        </p>
       </div>
     </div>
   );
